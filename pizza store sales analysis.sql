@@ -139,7 +139,8 @@ from order_details left join orders on order_details.order_id=orders.order_id le
 select order_date, sum(sum_r) over (order by order_date) as cum_rev
 from 
 (select order_date, sum(quantity*price) as sum_r
-from order_details left join orders on order_details.order_id=orders.order_id left join pizzas on order_details.pizza_id=pizzas.pizza_id
+from order_details left join orders on order_details.order_id=orders.order_id 
+left join pizzas on order_details.pizza_id=pizzas.pizza_id
 group by order_date) as sum_rev;
 
 -- Determine the top 3 most ordered pizza types based on revenue for each pizza category.
@@ -148,6 +149,7 @@ from
 (select category, name, rev, rank() over(partition by category order by rev desc) as ranks
 from
 (select category, name,  sum(quantity*price) as rev
-from order_details left join pizzas on order_details.pizza_id=pizzas.pizza_id left join pizza_types on pizzas.pizza_type_id=pizza_types.pizza_type_id
+from order_details left join pizzas on order_details.pizza_id=pizzas.pizza_id 
+left join pizza_types on pizzas.pizza_type_id=pizza_types.pizza_type_id
 group by pizza_types.category, pizza_types.name) as tb) as tr
 where ranks <= 3;
